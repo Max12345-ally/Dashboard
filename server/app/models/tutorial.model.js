@@ -1,8 +1,5 @@
-module.exports = (sequelize, Sequelize) => {
+module.exports = (sequelize, Sequelize, Author) => {
   const Tutorial = sequelize.define("tutorial", {
-    authorId: {
-      type: Sequelize.UUID
-    },
     price: {
       type: Sequelize.DECIMAL
     },
@@ -19,8 +16,6 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.DATE
     }
   });
-
-  const Author = require("./author.model.js")(sequelize, Sequelize);
   Tutorial.hasOne(Author);
 
   return Tutorial;

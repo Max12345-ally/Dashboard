@@ -19,7 +19,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.authors = require("./author.model.js")(sequelize, Sequelize);
-db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
+db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize, db.authors);
 
 
 

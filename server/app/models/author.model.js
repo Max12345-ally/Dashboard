@@ -7,19 +7,16 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: false,
         primaryKey: true
       },
-      price: {
+      salary: {
         type: Sequelize.DECIMAL
       },
-      pageCount: {
+      starsCount: {
         type: Sequelize.INTEGER
       },
-      title: {
+      name: {
         type: Sequelize.STRING
       },
-      description: {
-        type: Sequelize.STRING
-      },
-      publishedDate: {
+      birthDate: {
         type: Sequelize.DATE
       }
     });
