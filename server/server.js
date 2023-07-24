@@ -1,4 +1,5 @@
 const express = require("express");
+require('dotenv').config({ debug: false, override: true })
 // const bodyParser = require("body-parser"); /* deprecated */
 const cors = require("cors");
 
