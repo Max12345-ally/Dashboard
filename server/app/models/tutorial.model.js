@@ -16,7 +16,7 @@ module.exports = (sequelize, Sequelize, Author) => {
       type: Sequelize.DATE
     }
   });
-  Tutorial.hasOne(Author);
+  Author.hasOne(Tutorial);
 
   return Tutorial;
 };

@@ -5,17 +5,15 @@ const Op = db.Sequelize.Op;
 // Create and Save a new Author
 exports.create = (req, res) => {
   // Validate request
-  if (!req.body.title) {
+  if (!req.body.name) {
     res.status(400).send({
-      message: "Content can not be empty!"
+      message: "Name can not be empty!"
     });
     return;
   }
 
   // Create a Author
   const author = {
-    title: req.body.title,
-    description: req.body.description,
     salary: req.body.salary, 
     starsCount: req.body.startCount,
     name: req.body.name,
@@ -23,7 +21,7 @@ exports.create = (req, res) => {
   };
 
   // Save Author in the database
-  Author.create(tutorial)
+  Author.create(author)
     .then(data => {
       res.send(data);
     })
@@ -37,8 +35,8 @@ exports.create = (req, res) => {
 
 // Retrieve all Authors from the database.
 exports.findAll = (req, res) => {
-  const title = req.query.title;
-  var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
+  const name = req.query.name;
+  var condition = name ? { name: { [Op.iLike]: `%${name}%` } } : null;
   Author.findAll({ where: condition })
     .then(data => {
       res.send(data);
@@ -139,16 +137,3 @@ exports.deleteAll = (req, res) => {
     });
 };
 
-// find all published Author
-exports.findAllPublished = (req, res) => {
-  Author.findAll({ where: { published: true } })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving authors."
-      });
-    });
-};

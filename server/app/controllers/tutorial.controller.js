@@ -5,16 +5,23 @@ const Op = db.Sequelize.Op;
 // Create and Save a new Tutorial
 exports.create = (req, res) => {
   // Validate request
-  if (!req.body.title) {
+  if (!req.body.title ) {
     res.status(400).send({
-      message: "Content can not be empty!"
+      message: "title can not be empty!"
+    });
+    return;
+  }
+
+  if (!req.body.authorId ) {
+    res.status(400).send({
+      message: "authorId can not be empty!"
     });
     return;
   }
 
   // Create a Tutorial
   const tutorial = {
-    authorId: req.body.title,
+    authorId: req.body.authorId,
     description: req.body.description,
     //published: req.body.published ? req.body.published : false
     price: req.body.price,
