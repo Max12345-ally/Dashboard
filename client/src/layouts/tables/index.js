@@ -16,6 +16,11 @@ Coded by www.creative-tim.com
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import { loadAuthors } from "./data/loadAuthors";
+import { Grid as AgGrid } from 'ag-grid-community';
+
+import 'ag-grid-community/styles//ag-grid.css';
+import 'ag-grid-community/styles//ag-theme-alpine.css';
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -31,9 +36,37 @@ import DataTable from "examples/Tables/DataTable";
 import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
 
+import { useCallback, useEffect } from "react";
+
 function Tables() {
   const { columns, rows } = authorsTableData();
   const { columns: pColumns, rows: pRows } = projectsTableData();
+
+  
+
+  const initTable = useCallback(async () => {
+    const authors = await loadAuthors();
+    var eGridDiv = document.querySelector('#myGrid');
+
+    var agGridOptions = {
+    columnDefs: [
+      { headerName: 'id', field: 'id' },
+      { headerName: 'name', field: 'name' },
+      { headerName: 'salary', field: 'salary' },
+      { headerName: 'starsCount', field: 'starsCount' },
+      { headerName: 'birthDate', field: 'birthDate' }
+    ],
+    rowData: authors 
+  };
+    new AgGrid(eGridDiv, agGridOptions);
+}, []);
+
+
+
+  useEffect(() => {
+    initTable();
+  }, []);
+
 
   return (
     <DashboardLayout>
@@ -53,7 +86,28 @@ function Tables() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Authors Table
+                <div id="myGrid" style={{height: "400px", width: "100%", borderRadius: "10px", overflow: "hidden"}} className="ag-theme-alpine"></div>
+                </MDTypography>
+              </MDBox>
+              <MDBox pt={3}>
+                TableContainer
+              </MDBox>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              <MDBox
+                mx={2}
+                mt={-3}
+                py={3}
+                px={2}
+                variant="gradient"
+                bgColor="info"
+                borderRadius="lg"
+                coloredShadow="info"
+              >
+                <MDTypography variant="h6" color="white">
+                  Team Members
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
