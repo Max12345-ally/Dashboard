@@ -17,6 +17,7 @@ Coded by www.creative-tim.com
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import { loadAuthors } from "./data/loadAuthors";
+import { loadTutorials } from "./data/loadTutorials";
 import { Grid as AgGrid } from 'ag-grid-community';
 
 import 'ag-grid-community/styles//ag-grid.css';
@@ -25,18 +26,21 @@ import 'ag-grid-community/styles//ag-theme-alpine.css';
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import Icon from "@mui/material/Icon";
+import MDButton from "components/MDButton";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import CreateAuthorsDialog from "./CreateAuthorDialog"
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect,useState } from "react";
 
 function Tables() {
   const { columns, rows } = authorsTableData();
@@ -46,6 +50,7 @@ function Tables() {
 
   const initTable = useCallback(async () => {
     const authors = await loadAuthors();
+    // const tutorials = await loadTutorials();
     var eGridDiv = document.querySelector('#myGrid');
 
     var agGridOptions = {
@@ -61,23 +66,48 @@ function Tables() {
     new AgGrid(eGridDiv, agGridOptions);
 }, []);
 
-
-
   useEffect(() => {
     initTable();
+    
   }, []);
 
+
+  const [isCreateAuthorDialogOpen, setIsCreateAuthorDialogOpen] = useState(false);
+
+  const handleAddAuthorClick = () => {
+    setIsCreateAuthorDialogOpen(true);
+  };
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox pt={6} pb={3}>
+        <MDBox pt={1} pb={3}>
+          <div display="flex" justify-content="space-between">      
+          <MDButton variant="gradient" color="dark" onClick={handleAddAuthorClick}>
+          <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+          &nbsp;add new author
+          </MDButton>
+
+          <MDButton variant="gradient" color="dark">
+          <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+          &nbsp;change new author
+          </MDButton>
+
+          <MDButton variant="gradient" color="dark" >
+          <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+          &nbsp;delete new author
+          </MDButton>
+          </div>
+        <CreateAuthorsDialog isCreateAuthorDialogOpen={isCreateAuthorDialogOpen} setIsCreateAuthorDialogOpen={setIsCreateAuthorDialogOpen} />
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
+              <MDBox pt={3}>
+                  
+              </MDBox>
               <MDBox
                 mx={2}
-                mt={-3}
+                mt={0}
                 py={3}
                 px={2}
                 variant="gradient"
@@ -86,14 +116,36 @@ function Tables() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
+                Authors
                 <div id="myGrid" style={{height: "400px", width: "100%", borderRadius: "10px", overflow: "hidden"}} className="ag-theme-alpine"></div>
                 </MDTypography>
               </MDBox>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Card>
               <MDBox pt={3}>
-                TableContainer
+                  
+              </MDBox>
+              <MDBox
+                mx={2}
+                mt={0}
+                py={3}
+                px={2}
+                variant="gradient"
+                bgColor="info"
+                borderRadius="lg"
+                coloredShadow="info"
+              >
+                <MDTypography variant="h6" color="white">
+                  Tutorials
+                <div id="myGrid" style={{height: "400px", width: "100%", borderRadius: "10px", overflow: "hidden"}} className="ag-theme-alpine"></div>
+                </MDTypography>
               </MDBox>
             </Card>
           </Grid>
+          
           <Grid item xs={12}>
             <Card>
               <MDBox
