@@ -41,7 +41,26 @@ import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
 
 import { useCallback, useEffect,useState } from "react";
+import { deleteAuthor } from "./data/deleteAuthor";
 
+const agGridOptions = {
+  columnDefs: [
+    { headerName: 'id', field: 'id' },
+    { headerName: 'name', field: 'name' },
+    { headerName: 'salary', field: 'salary' },
+    { headerName: 'starsCount', field: 'starsCount' },
+    { headerName: 'birthDate', field: 'birthDate' }
+  ],
+  rowSelection: 'single',
+  onSelectionChanged: onSelectionChanged
+
+
+}
+function onSelectionChanged() {
+  const selectedRows = agGridOptions.api.getSelectedRows();
+
+  console.log(selectedRows)
+}
 function Tables() {
   const { columns, rows } = authorsTableData();
   const { columns: pColumns, rows: pRows } = projectsTableData();
@@ -52,18 +71,10 @@ function Tables() {
     const authors = await loadAuthors();
     // const tutorials = await loadTutorials();
     var eGridDiv = document.querySelector('#myGrid');
-
-    var agGridOptions = {
-    columnDefs: [
-      { headerName: 'id', field: 'id' },
-      { headerName: 'name', field: 'name' },
-      { headerName: 'salary', field: 'salary' },
-      { headerName: 'starsCount', field: 'starsCount' },
-      { headerName: 'birthDate', field: 'birthDate' }
-    ],
-    rowData: authors 
-  };
-    new AgGrid(eGridDiv, agGridOptions);
+    agGridOptions.rowData = authors
+   new AgGrid(eGridDiv, agGridOptions);
+   
+   
 }, []);
 
   useEffect(() => {
@@ -77,6 +88,17 @@ function Tables() {
   const handleAddAuthorClick = () => {
     setIsCreateAuthorDialogOpen(true);
   };
+
+  const handleDeleteAuthorClick = () => {
+    const selectedRows = agGridOptions.api.getSelectedRows();
+    const selectedAuthor = selectedRows[0]
+    const confirmed = window.confirm(`Delete ${selectedAuthor.name}?`)
+    if(confirmed){
+      deleteAuthor(selectedAuthor.id)
+    }
+  };
+
+  
 
   return (
     <DashboardLayout>
@@ -93,9 +115,9 @@ function Tables() {
           &nbsp;change new author
           </MDButton>
 
-          <MDButton variant="gradient" color="dark" >
+          <MDButton variant="gradient" color="dark" onClick={handleDeleteAuthorClick}>
           <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-          &nbsp;delete new author
+          &nbsp;delete author
           </MDButton>
           </div>
         <CreateAuthorsDialog isCreateAuthorDialogOpen={isCreateAuthorDialogOpen} setIsCreateAuthorDialogOpen={setIsCreateAuthorDialogOpen} />
