@@ -44,7 +44,9 @@ import projectsTableData from "layouts/tables/data/projectsTableData";
 import { useCallback, useEffect,useState } from "react";
 import { deleteAuthor } from "./data/deleteAuthor";
 import { deleteTutorial } from "./data/deleteTutorial";
+import { loadAuthorPage } from './data/loadAuthorPage'
 
+let authorsLoadedCount = 0;
 const agGridAuthorsOptions = {
   columnDefs: [
     { headerName: 'id', field: 'id' },
@@ -87,28 +89,26 @@ function Tables() {
   const { columns: pColumns, rows: pRows } = projectsTableData();
 
   const initAuthorsTable = useCallback(async () => {
-    const authors = await loadAuthors();
+   //const authors = await loadAuthors();
     const gridDiv = document.querySelector('#authorsGrid');
     //agGridAuthorsOptions.rowData = authors
     const dataSource = {
       rowCount: undefined, // behave as infinite scroll
 
-      getRows: (params) => {
-        console.log('asking for ' + params.startRow + ' to ' + params.endRow);
+      getRows: async (params) => {
+        console.log('asking for ' + params.startRow + ' to ' + params.endRow +' authors');
+        const offset = params.startRow 
+        const limit = params.endRow - params.startRow
+        const authorsPage = await loadAuthorPage(offset, limit)
 
-        // At this point in your code, you would call the server.
-        // To make the demo look real, wait for 500ms before returning
-        setTimeout(function () {
-          // take a slice of the total rows
-          const rowsThisPage = authors.slice(params.startRow, params.endRow);
-          // if on or after the last page, work out the last row.
-          let lastRow = -1;
-          if (authors.length <= params.endRow) {
-            lastRow = authors.length;
-          }
-          // call the success callback
-          params.successCallback(rowsThisPage, lastRow);
-        }, 500);
+        // if on or after the last page, work out the last row.
+        let lastRow = -1;
+        if (authorsPage.length === 0) {
+          lastRow = authorsLoadedCount;
+        }
+        // call the success callback
+        params.successCallback(authorsPage, lastRow);
+        authorsLoadedCount+=authorsPage.length
       },
     };
 
