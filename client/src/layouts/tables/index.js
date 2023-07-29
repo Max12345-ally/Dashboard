@@ -14,46 +14,47 @@ Coded by www.creative-tim.com
 */
 
 // @mui material components
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import { loadAuthors } from "./data/loadAuthors";
-import { loadTutorials } from "./data/loadTutorials";
-import { Grid as AgGrid } from 'ag-grid-community';
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import {loadAuthors} from './data/loadAuthors';
+import {loadTutorials} from './data/loadTutorials';
+import {Grid as AgGrid} from 'ag-grid-community';
 
 import 'ag-grid-community/styles//ag-grid.css';
 import 'ag-grid-community/styles//ag-theme-alpine.css';
 
 // Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import Icon from "@mui/material/Icon";
-import MDButton from "components/MDButton";
+import MDBox from 'components/MDBox';
+import MDTypography from 'components/MDTypography';
+import Icon from '@mui/material/Icon';
+import MDButton from 'components/MDButton';
 
 // Material Dashboard 2 React example components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import DataTable from "examples/Tables/DataTable";
-import CreateAuthorsDialog from "./CreateAuthorDialog"
-import CreateTutorialsDialog from "./CreateTutorialDialog"
+import DashboardLayout from 'examples/LayoutContainers/DashboardLayout';
+import DashboardNavbar from 'examples/Navbars/DashboardNavbar';
+import Footer from 'examples/Footer';
+import DataTable from 'examples/Tables/DataTable';
+import CreateAuthorsDialog from './CreateAuthorDialog';
+import CreateTutorialsDialog from './CreateTutorialDialog';
+import UpdateAuthorsDialog from './UpdateAuthorDialog';
 
 // Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
-import projectsTableData from "layouts/tables/data/projectsTableData";
+import authorsTableData from 'layouts/tables/data/authorsTableData';
+import projectsTableData from 'layouts/tables/data/projectsTableData';
 
-import { useCallback, useEffect,useState } from "react";
-import { deleteAuthor } from "./data/deleteAuthor";
-import { deleteTutorial } from "./data/deleteTutorial";
-import { loadAuthorPage } from './data/loadAuthorPage'
+import {useCallback, useEffect, useState} from 'react';
+import {deleteAuthor} from './data/deleteAuthor';
+import {deleteTutorial} from './data/deleteTutorial';
+import {loadAuthorPage} from './data/loadAuthorPage';
 
 let authorsLoadedCount = 0;
 const agGridAuthorsOptions = {
   columnDefs: [
-    { headerName: 'id', field: 'id' },
-    { headerName: 'name', field: 'name' },
-    { headerName: 'salary', field: 'salary' },
-    { headerName: 'starsCount', field: 'starsCount' },
-    { headerName: 'birthDate', field: 'birthDate' }
+    {headerName: 'id', field: 'id'},
+    {headerName: 'name', field: 'name'},
+    {headerName: 'salary', field: 'salary'},
+    {headerName: 'starsCount', field: 'starsCount'},
+    {headerName: 'birthDate', field: 'birthDate'},
   ],
   rowBuffer: 0,
   rowSelection: 'single',
@@ -74,32 +75,31 @@ const agGridAuthorsOptions = {
   // how many pages to store in cache. default is undefined, which allows an infinite sized cache,
   // pages are never purged. this should be set for large data to stop your browser from getting
   // full of data
-  maxBlocksInCache: 5//10
-
-}
-
-
+  maxBlocksInCache: 5, //10
+};
 
 function onAuthorsSelectionChanged() {
   const selectedRows = agGridAuthorsOptions.api.getSelectedRows();
 }
 
 function Tables() {
-  const { columns, rows } = authorsTableData();
-  const { columns: pColumns, rows: pRows } = projectsTableData();
+  const {columns, rows} = authorsTableData();
+  const {columns: pColumns, rows: pRows} = projectsTableData();
 
   const initAuthorsTable = useCallback(async () => {
-   //const authors = await loadAuthors();
+    //const authors = await loadAuthors();
     const gridDiv = document.querySelector('#authorsGrid');
     //agGridAuthorsOptions.rowData = authors
     const dataSource = {
       rowCount: undefined, // behave as infinite scroll
 
       getRows: async (params) => {
-        console.log('asking for ' + params.startRow + ' to ' + params.endRow +' authors');
-        const offset = params.startRow 
-        const limit = params.endRow - params.startRow
-        const authorsPage = await loadAuthorPage(offset, limit)
+        console.log(
+          'asking for ' + params.startRow + ' to ' + params.endRow + ' authors'
+        );
+        const offset = params.startRow;
+        const limit = params.endRow - params.startRow;
+        const authorsPage = await loadAuthorPage(offset, limit);
 
         // if on or after the last page, work out the last row.
         let lastRow = -1;
@@ -108,170 +108,222 @@ function Tables() {
         }
         // call the success callback
         params.successCallback(authorsPage, lastRow);
-        authorsLoadedCount+=authorsPage.length
+        authorsLoadedCount += authorsPage.length;
       },
     };
 
-    new AgGrid(gridDiv, agGridAuthorsOptions); 
+    new AgGrid(gridDiv, agGridAuthorsOptions);
 
     agGridAuthorsOptions.api.setDatasource(dataSource);
+  }, []);
 
+  const agGridTutorialsOptions = {
+    columnDefs: [
+      {headerName: 'price', field: 'price'},
+      {headerName: 'pageCount', field: 'pageCount'},
+      {headerName: 'title', field: 'title'},
+      {headerName: 'description', field: 'description'},
+      {headerName: 'publishedDate', field: 'publishedDate'},
+    ],
+    rowSelection: 'single',
+    onSelectionChanged: onAuthorsSelectionChanged,
+  };
 
+  function onTutorialsSelectionChanged() {
+    const selectedRows = agGridTutorialsOptions.api.getSelectedRows();
+  }
 
-}, []);
-
-const agGridTutorialsOptions = {
-  columnDefs: [
-    { headerName: 'price', field: 'price' },
-    { headerName: 'pageCount', field: 'pageCount' },
-    { headerName: 'title', field: 'title' },
-    { headerName: 'description', field: 'description' },
-    { headerName: 'publishedDate', field: 'publishedDate' }
-  ],
-  rowSelection: 'single',
-  onSelectionChanged: onAuthorsSelectionChanged
-}
-
-function onTutorialsSelectionChanged() {
-  const selectedRows = agGridTutorialsOptions.api.getSelectedRows();
-}
-
-const initTutorialsTable = useCallback(async () => {
-  
-  const tutorials = await loadTutorials();
-  const eGridDiv = document.querySelector('#tutorialsGrid');
-  agGridTutorialsOptions.rowData = tutorials
- new AgGrid(eGridDiv, agGridTutorialsOptions);
- 
- 
-}, []);
+  const initTutorialsTable = useCallback(async () => {
+    const tutorials = await loadTutorials();
+    const eGridDiv = document.querySelector('#tutorialsGrid');
+    agGridTutorialsOptions.rowData = tutorials;
+    new AgGrid(eGridDiv, agGridTutorialsOptions);
+  }, []);
 
   useEffect(() => {
     initAuthorsTable();
     initTutorialsTable();
   }, []);
 
-  const [isCreateAuthorDialogOpen, setIsCreateAuthorDialogOpen] = useState(false);
+  const [isCreateAuthorDialogOpen, setIsCreateAuthorDialogOpen] =
+    useState(false);
 
   const handleAddAuthorClick = () => {
     setIsCreateAuthorDialogOpen(true);
   };
 
-  const [isCreateTutorialDialogOpen, setIsCreateTutorialDialogOpen] = useState(false);
+  const [isCreateTutorialDialogOpen, setIsCreateTutorialDialogOpen] =
+    useState(false);
 
   const handleAddTutorialClick = () => {
     setIsCreateTutorialDialogOpen(true);
   };
 
-  
-
-  const handleDeleteAuthorClick = async() => {
-
+  const handleDeleteAuthorClick = async () => {
     const selectedRows = agGridAuthorsOptions.api.getSelectedRows();
 
-    if (selectedRows.length === 0){
-      window.alert("Please select row")
+    if (selectedRows.length === 0) {
+      window.alert('Please select row');
       return;
-    } 
-
-    const selectedAuthor = selectedRows[0]
-    const confirmed = window.confirm(`Delete ${selectedAuthor.name}?`)
-    if(confirmed){
-      await deleteAuthor(selectedAuthor.id)
-      window.location.reload()
     }
-      
 
+    const selectedAuthor = selectedRows[0];
+    const confirmed = window.confirm(`Delete ${selectedAuthor.name}?`);
+    if (confirmed) {
+      await deleteAuthor(selectedAuthor.id);
+      window.location.reload();
+    }
   };
 
   const handleDeleteTutorialClick = () => {
     const selectedRows = agGridTutorialsOptions.api.getSelectedRows();
-    const selectedTutorial = selectedRows[0]
-    const confirmed = window.confirm(`Delete ${selectedTutorial.name}?`)
-    if(confirmed){
-      deleteAuthor(selectedTutorial.id)
+    const selectedTutorial = selectedRows[0];
+    const confirmed = window.confirm(`Delete ${selectedTutorial.name}?`);
+    if (confirmed) {
+      deleteAuthor(selectedTutorial.id);
     }
-
   };
 
+  const [isUpdateAuthorDialogOpen, setIsUpdateAuthorDialogOpen] =
+    useState(false);
+  const [authorToEdit, setAuthorToEdit] = useState(null);
+
+  const handleUpdateAuthorClick = async () => {
+    const selectedRows = agGridAuthorsOptions.api.getSelectedRows();
+
+    if (selectedRows.length === 0) {
+      window.alert('Please select row');
+      return;
+    }
+
+    const selectedAuthor = selectedRows[0];
+    setIsUpdateAuthorDialogOpen(true);
+    setAuthorToEdit(selectedAuthor);
+  };
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-          <MDBox pt={1} pb={3}>
-            <div display="flex" justify-content="space-between">      
-            <MDButton variant="gradient" color="info" onClick={handleAddAuthorClick}>
-              <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-              &nbsp;add new author
-            </MDButton>
-
-          <MDButton variant="gradient" color="warning">
-          <Icon sx={{ fontWeight: "bold" }}>update</Icon>
-          &nbsp;change new author
+      <MDBox pt={1} pb={3}>
+        <div style={{display: 'flex', gap: '10px', marginBottom: '5px'}}>
+          <MDButton
+            variant='gradient'
+            color='info'
+            onClick={handleAddAuthorClick}
+          >
+            <Icon sx={{fontWeight: 'bold'}}>add</Icon>
+            &nbsp;add new author
           </MDButton>
 
-          <MDButton variant="gradient" color="dark" onClick={handleDeleteAuthorClick}>
-          <Icon sx={{ fontWeight: "bold" }}>delete</Icon>
-          &nbsp;delete author
+          <MDButton
+            variant='gradient'
+            color='warning'
+            onClick={handleUpdateAuthorClick}
+          >
+            <Icon sx={{fontWeight: 'bold'}}>update</Icon>
+            &nbsp;change new author
           </MDButton>
-          </div>
-        <CreateAuthorsDialog isCreateAuthorDialogOpen={isCreateAuthorDialogOpen} setIsCreateAuthorDialogOpen={setIsCreateAuthorDialogOpen} />
+
+          <MDButton
+            variant='gradient'
+            color='dark'
+            onClick={handleDeleteAuthorClick}
+          >
+            <Icon sx={{fontWeight: 'bold'}}>delete</Icon>
+            &nbsp;delete author
+          </MDButton>
+        </div>
+        <CreateAuthorsDialog
+          isUpdateAuthorDialogOpen={isUpdateAuthorDialogOpen}
+          setIsUpdateAuthorDialogOpen={setIsUpdateAuthorDialogOpen}
+        />
+        <UpdateAuthorsDialog
+          isUpdateAuthorDialogOpen={isUpdateAuthorDialogOpen}
+          setIsUpdateAuthorDialogOpen={setIsUpdateAuthorDialogOpen}
+          authorToUpdate={authorToEdit}
+        />
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
-              <MDBox pt={3}>
-                  
-              </MDBox>
+              <MDBox pt={3}></MDBox>
               <MDBox
                 mx={2}
                 mt={0}
                 py={3}
                 px={2}
-                variant="gradient"
-                bgColor="info"
-                borderRadius="lg"
-                coloredShadow="info"
+                variant='gradient'
+                bgColor='info'
+                borderRadius='lg'
+                coloredShadow='info'
               >
-                <MDTypography variant="h6" color="white">
-                Authors
-                <div id="authorsGrid" style={{height: "200px", width: "100%", borderRadius: "10px", overflow: "hidden"}} className="ag-theme-alpine"></div>
+                <MDTypography variant='h6' color='white'>
+                  Authors
+                  <div
+                    id='authorsGrid'
+                    style={{
+                      height: '200px',
+                      width: '100%',
+                      borderRadius: '10px',
+                      overflow: 'hidden',
+                    }}
+                    className='ag-theme-alpine'
+                  ></div>
                 </MDTypography>
               </MDBox>
             </Card>
           </Grid>
 
-         
           <Grid item xs={12}>
             <Card>
               <MDBox pt={3}>
-              <MDButton variant="gradient" color="dark" onClick={handleAddTutorialClick}>
-                <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                &nbsp;add new tutorial
-              </MDButton>
-              <MDButton variant="gradient" color="dark" onClick={handleDeleteTutorialClick}>
-                <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                &nbsp;delete tutorial
-              </MDButton>
-              <CreateTutorialsDialog isCreateTutorialDialogOpen={isCreateTutorialDialogOpen} setIsCreateTutorialDialogOpen={setIsCreateTutorialDialogOpen} />
+                <MDButton
+                  variant='gradient'
+                  color='dark'
+                  onClick={handleAddTutorialClick}
+                >
+                  <Icon sx={{fontWeight: 'bold'}}>add</Icon>
+                  &nbsp;add new tutorial
+                </MDButton>
+                <MDButton
+                  variant='gradient'
+                  color='dark'
+                  onClick={handleDeleteTutorialClick}
+                >
+                  <Icon sx={{fontWeight: 'bold'}}>add</Icon>
+                  &nbsp;delete tutorial
+                </MDButton>
+                <CreateTutorialsDialog
+                  isCreateTutorialDialogOpen={isCreateTutorialDialogOpen}
+                  setIsCreateTutorialDialogOpen={setIsCreateTutorialDialogOpen}
+                />
               </MDBox>
               <MDBox
                 mx={2}
                 mt={0}
                 py={3}
                 px={2}
-                variant="gradient"
-                bgColor="info"
-                borderRadius="lg"
-                coloredShadow="info"
+                variant='gradient'
+                bgColor='info'
+                borderRadius='lg'
+                coloredShadow='info'
               >
-                <MDTypography variant="h6" color="white">
+                <MDTypography variant='h6' color='white'>
                   Tutorials
-                <div id="tutorialsGrid" style={{height: "400px", width: "100%", borderRadius: "10px", overflow: "hidden"}} className="ag-theme-alpine"></div>
+                  <div
+                    id='tutorialsGrid'
+                    style={{
+                      height: '400px',
+                      width: '100%',
+                      borderRadius: '10px',
+                      overflow: 'hidden',
+                    }}
+                    className='ag-theme-alpine'
+                  ></div>
                 </MDTypography>
               </MDBox>
             </Card>
           </Grid>
-          
+
           <Grid item xs={12}>
             <Card>
               <MDBox
@@ -279,18 +331,18 @@ const initTutorialsTable = useCallback(async () => {
                 mt={-3}
                 py={3}
                 px={2}
-                variant="gradient"
-                bgColor="info"
-                borderRadius="lg"
-                coloredShadow="info"
+                variant='gradient'
+                bgColor='info'
+                borderRadius='lg'
+                coloredShadow='info'
               >
-                <MDTypography variant="h6" color="white">
+                <MDTypography variant='h6' color='white'>
                   Team Members
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
-                  table={{ columns, rows }}
+                  table={{columns, rows}}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
@@ -306,18 +358,18 @@ const initTutorialsTable = useCallback(async () => {
                 mt={-3}
                 py={3}
                 px={2}
-                variant="gradient"
-                bgColor="info"
-                borderRadius="lg"
-                coloredShadow="info"
+                variant='gradient'
+                bgColor='info'
+                borderRadius='lg'
+                coloredShadow='info'
               >
-                <MDTypography variant="h6" color="white">
+                <MDTypography variant='h6' color='white'>
                   Projects Table
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
-                  table={{ columns: pColumns, rows: pRows }}
+                  table={{columns: pColumns, rows: pRows}}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
