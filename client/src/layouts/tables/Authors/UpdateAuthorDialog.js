@@ -7,8 +7,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import {saveNewAuthor} from './data/saveNewAuthor';
-import {updateAuthor} from './data/updateAuthor';
+import {updateAuthor} from './api/updateAuthor';
 
 //1.1 see the current data
 //1,2 find id of Author
