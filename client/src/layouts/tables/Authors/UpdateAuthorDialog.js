@@ -12,7 +12,7 @@ import {updateAuthor} from './api/updateAuthor';
 //1.1 see the current data
 //1,2 find id of Author
 
-export default function UpdateAuthorsDialog(props) {
+export function UpdateAuthorDialog(props) {
   const {
     isUpdateAuthorDialogOpen,
     setIsUpdateAuthorDialogOpen,

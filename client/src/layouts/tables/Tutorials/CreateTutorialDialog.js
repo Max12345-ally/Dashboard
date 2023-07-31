@@ -7,9 +7,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import {saveNewTutorial} from './data/saveNewTutorial';
+import {saveNewTutorial} from './api/saveNewTutorial';
 
-export default function CreateTutorialsDialog(props) {
+export function CreateTutorialDialog(props) {
   const {isCreateTutorialDialogOpen, setIsCreateTutorialDialogOpen} = props;
   const [authorName, setAuthorName] = useState('');
   const [price, setPrice] = useState('');
@@ -50,10 +50,10 @@ export default function CreateTutorialsDialog(props) {
 
   return (
     <Dialog open={isCreateTutorialDialogOpen} onClose={handleClose}>
-      <DialogTitle>Add new Tutorial</DialogTitle>
+      <DialogTitle>Add new Author2</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          please add new Tutorial to continue
+          please add new Author2 to continue
         </DialogContentText>
         <TextField
           value={authorName}
@@ -72,7 +72,7 @@ export default function CreateTutorialsDialog(props) {
           autoFocus
           margin='dense'
           id='PageCount'
-          label='PageCount'
+          label='PageCountP'
           type='details'
           fullWidth
           variant='standard'

@@ -1,8 +1,8 @@
 import {Grid as AgGrid} from 'ag-grid-community';
-import {UpdateAuthorDialog} from './UpdateAuthorDialog';
-import {CreateAuthorDialog} from './CreateAuthorDialog';
-import {deleteAuthor} from './api/deleteAuthor';
-import {loadAuthorPage} from './api/loadAuthorPage';
+import {UpdateTutorialDialog} from './UpdateTutorialDialog';
+import {CreateTutorialDialog} from './CreateTutorialDialog';
+import {deleteTutorial} from './api/deleteTutorial';
+import {loadTutorialPage} from './api/loadTutorialPage';
 import {useCallback, useEffect, useState} from 'react';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
@@ -13,25 +13,19 @@ import MDTypography from 'components/MDTypography';
 import Icon from '@mui/material/Icon';
 import MDButton from 'components/MDButton';
 
-let authorsLoadedCount = 0;
+let tutorialsLoadedCount = 0;
 
-const agGridAuthorsOptions = {
+const agGridTutorialsOptions = {
   columnDefs: [
-    {headerName: 'id', field: 'id'},
-    {headerName: 'name', field: 'name'},
-    {headerName: 'salary', field: 'salary'},
-    {headerName: 'starsCount', field: 'starsCount'},
-    {
-      headerName: 'birthDate',
-      field: 'birthDate',
-      cellRenderer: (props) => {
-        return new Date(props.value).toLocaleDateString();
-      },
-    },
+    {headerName: 'price', field: 'price'},
+    {headerName: 'pageCount', field: 'pageCount'},
+    {headerName: 'title', field: 'title'},
+    {headerName: 'description', field: 'description'},
+    {headerName: 'publishedDate', field: 'publishedDate'},
   ],
   rowBuffer: 0,
   rowSelection: 'single',
-  onSelectionChanged: onAuthorsSelectionChanged,
+  // onSelectionChanged: onAuthorsSelectionChanged,
   rowModelType: 'infinite',
   // how big each page in our page cache will be, default is 100
   cacheBlockSize: 5, //100,
@@ -51,73 +45,73 @@ const agGridAuthorsOptions = {
   maxBlocksInCache: 5, //10
 };
 
-function onAuthorsSelectionChanged() {
-  const selectedRows = agGridAuthorsOptions.api.getSelectedRows();
-}
-
-export function Authors() {
+export function Tutorials() {
   useEffect(() => {
-    initAuthorsTable();
+    initTutorialsTable();
   }, []);
 
-  const initAuthorsTable = useCallback(async () => {
+  const initTutorialsTable = useCallback(async () => {
     //const authors = await loadAuthors();
-    const gridDiv = document.querySelector('#authorsGrid');
+    const gridDiv = document.querySelector('#tutorialsGrid');
     //agGridAuthorsOptions.rowData = authors
     const dataSource = {
       rowCount: undefined, // behave as infinite scroll
 
       getRows: async (params) => {
         console.log(
-          'asking for ' + params.startRow + ' to ' + params.endRow + ' authors'
+          'asking for ' +
+            params.startRow +
+            ' to ' +
+            params.endRow +
+            ' tutorials'
         );
         const offset = params.startRow;
         const limit = params.endRow - params.startRow;
-        const authorsPage = await loadAuthorPage(offset, limit);
+        const tutorialsPage = await loadTutorialPage(offset, limit);
 
         // if on or after the last page, work out the last row.
         let lastRow = -1;
-        if (authorsPage.length === 0) {
-          lastRow = authorsLoadedCount;
+        if (tutorialsPage.length === 0) {
+          lastRow = tutorialsLoadedCount;
         }
         // call the success callback
-        params.successCallback(authorsPage, lastRow);
-        authorsLoadedCount += authorsPage.length;
+        params.successCallback(tutorialsPage, lastRow);
+        tutorialsLoadedCount += tutorialsPage.length;
       },
     };
 
-    new AgGrid(gridDiv, agGridAuthorsOptions);
+    new AgGrid(gridDiv, agGridTutorialsOptions);
 
-    agGridAuthorsOptions.api.setDatasource(dataSource);
+    agGridTutorialsOptions.api.setDatasource(dataSource);
   }, []);
 
-  const [isCreateAuthorDialogOpen, setIsCreateAuthorDialogOpen] =
+  const [isCreateTutorialDialogOpen, setIsCreateTutorialDialogOpen] =
     useState(false);
 
-  const handleAddAuthorClick = () => {
-    setIsCreateAuthorDialogOpen(true);
+  const handleAddTutorialClick = () => {
+    setIsCreateTutorialDialogOpen(true);
   };
-  const handleDeleteAuthorClick = async () => {
-    const selectedRows = agGridAuthorsOptions.api.getSelectedRows();
+  const handleDeleteTutorialClick = async () => {
+    const selectedRows = agGridTutorialsOptions.api.getSelectedRows();
 
     if (selectedRows.length === 0) {
       window.alert('Please select row');
       return;
     }
 
-    const selectedAuthor = selectedRows[0];
-    const confirmed = window.confirm(`Delete ${selectedAuthor.name}?`);
+    const selectedTutorial = selectedRows[0];
+    const confirmed = window.confirm(`Delete ${selectedTutorial.title}?`);
     if (confirmed) {
-      await deleteAuthor(selectedAuthor.id);
+      await deleteTutorial(selectedTutorial.id);
       window.location.reload();
     }
   };
-  const [isUpdateAuthorDialogOpen, setIsUpdateAuthorDialogOpen] =
+  const [isUpdateTutorialDialogOpen, setIsUpdateTutorialDialogOpen] =
     useState(false);
-  const [authorToEdit, setAuthorToEdit] = useState(null);
+  const [tutorialToEdit, setTutorialToEdit] = useState(null);
 
-  const handleUpdateAuthorClick = async () => {
-    const selectedRows = agGridAuthorsOptions.api.getSelectedRows();
+  const handleUpdateTutorialClick = async () => {
+    const selectedRows = agGridTutorialsOptions.api.getSelectedRows();
 
     if (selectedRows.length === 0) {
       window.alert('Please select row');
@@ -125,26 +119,26 @@ export function Authors() {
     }
 
     const selectedAuthor = selectedRows[0];
-    setIsUpdateAuthorDialogOpen(true);
-    setAuthorToEdit(selectedAuthor);
+    setIsUpdateTutorialDialogOpen(true);
+    setTutorialToEdit(selectedAuthor);
   };
   return (
     <>
-      <CreateAuthorDialog
-        isCreateAuthorDialogOpen={isCreateAuthorDialogOpen}
-        setIsCreateAuthorDialogOpen={setIsCreateAuthorDialogOpen}
+      <CreateTutorialDialog
+        isCreateTutorialDialogOpen={isCreateTutorialDialogOpen}
+        setIsCreateTutorialDialogOpen={setIsCreateTutorialDialogOpen}
       />
-      <UpdateAuthorDialog
-        isUpdateAuthorDialogOpen={isUpdateAuthorDialogOpen}
-        setIsUpdateAuthorDialogOpen={setIsUpdateAuthorDialogOpen}
-        authorToUpdate={authorToEdit}
+      <UpdateTutorialDialog
+        isUpdateTutorialDialogOpen={isUpdateTutorialDialogOpen}
+        setIsUpdateTutorialDialogOpen={setIsUpdateTutorialDialogOpen}
+        tutorialToUpdate={tutorialToEdit}
       />
       <Grid item xs={12}>
         <div style={{display: 'flex', gap: '10px', marginBottom: '5px'}}>
           <MDButton
             variant='gradient'
             color='info'
-            onClick={handleAddAuthorClick}
+            onClick={handleAddTutorialClick}
           >
             <Icon sx={{fontWeight: 'bold'}}>add</Icon>
             &nbsp;Добавить запись
@@ -153,19 +147,19 @@ export function Authors() {
           <MDButton
             variant='gradient'
             color='warning'
-            onClick={handleUpdateAuthorClick}
+            onClick={handleUpdateTutorialClick}
           >
             <Icon sx={{fontWeight: 'bold'}}>update</Icon>
-            &nbsp;Изменить
+            &nbsp; Изменить
           </MDButton>
 
           <MDButton
             variant='gradient'
             color='dark'
-            onClick={handleDeleteAuthorClick}
+            onClick={handleDeleteTutorialClick}
           >
             <Icon sx={{fontWeight: 'bold'}}>delete</Icon>
-            &nbsp;Удалить
+            &nbsp; Удалить
           </MDButton>
         </div>
         <Card>
@@ -181,9 +175,9 @@ export function Authors() {
             coloredShadow='info'
           >
             <MDTypography variant='h6' color='white'>
-              Authors
+              Tutorials
               <div
-                id='authorsGrid'
+                id='tutorialsGrid'
                 style={{
                   height: '200px',
                   width: '100%',

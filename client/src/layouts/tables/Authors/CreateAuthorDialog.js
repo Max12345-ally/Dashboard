@@ -9,7 +9,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import {saveNewAuthor} from './api/saveNewAuthor';
 
-export default function CreateAuthorsDialog(props) {
+export function CreateAuthorDialog(props) {
   const {isCreateAuthorDialogOpen, setIsCreateAuthorDialogOpen} = props;
   const [name, setName] = useState('');
   const [salary, setSalary] = useState('');

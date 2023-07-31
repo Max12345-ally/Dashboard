@@ -7,10 +7,17 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import {saveNewTutorial} from './data/saveNewTutorial';
+import {updateTutorial} from './api/updateTutorial';
 
-export default function CreateTutorialsDialog(props) {
-  const {isCreateTutorialDialogOpen, setIsCreateTutorialDialogOpen} = props;
+//1.1 see the current data
+//1,2 find id of Author
+
+export function UpdateTutorialDialog(props) {
+  const {
+    isUpdateTutorialDialogOpen,
+    setIsUpdateTutorialDialogOpen,
+    tutorialToUpdate,
+  } = props;
   const [authorName, setAuthorName] = useState('');
   const [price, setPrice] = useState('');
   const [pageCount, setPageCount] = useState('');
@@ -18,13 +25,22 @@ export default function CreateTutorialsDialog(props) {
   const [description, setDescription] = useState('');
   const [publishedDate, setPublishedDate] = useState('');
 
-  const handleClose = () => {
-    setIsCreateTutorialDialogOpen(false);
-  };
-  const handleAdd = async () => {
-    //1. collect data
+  useEffect(() => {
+    setAuthorName(tutorialToUpdate?.authorName);
+    setPrice(tutorialToUpdate?.price);
+    setPageCount(tutorialToUpdate?.pageCount);
+    setTitle(tutorialToUpdate?.title);
+    setDescription(tutorialToUpdate?.description);
+    setPublishedDate(tutorialToUpdate?.publishedDate);
+  }, [tutorialToUpdate]);
 
-    const tutorialToSave = {
+  const handleClose = () => {
+    setIsUpdateTutorialDialogOpen(false);
+  };
+  const handleUpdate = async () => {
+    //1. collect data
+    const tutorialToSend = {
+      id: tutorialToUpdate.id,
       authorName,
       price,
       pageCount,
@@ -32,11 +48,10 @@ export default function CreateTutorialsDialog(props) {
       description,
       publishedDate,
     };
-    console.log(tutorialToSave);
 
-    //2. send data
+    //2. resend updated data
 
-    await saveNewTutorial(tutorialToSave);
+    await updateTutorial(tutorialToSend);
     setAuthorName('');
     setPrice('');
     setPageCount('');
@@ -45,15 +60,17 @@ export default function CreateTutorialsDialog(props) {
     setPublishedDate('');
 
     //3. close popup
+
     handleClose();
+    window.location.reload();
   };
 
   return (
-    <Dialog open={isCreateTutorialDialogOpen} onClose={handleClose}>
-      <DialogTitle>Add new Tutorial</DialogTitle>
+    <Dialog open={isUpdateTutorialDialogOpen} onClose={handleClose}>
+      <DialogTitle>update Tutorial</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          please add new Tutorial to continue
+          please update Tutorial to continue
         </DialogContentText>
         <TextField
           value={authorName}
@@ -124,7 +141,7 @@ export default function CreateTutorialsDialog(props) {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleAdd}>Add</Button>
+        <Button onClick={handleUpdate}>Add</Button>
       </DialogActions>
     </Dialog>
   );

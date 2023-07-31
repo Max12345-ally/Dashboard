@@ -71,6 +71,23 @@ exports.findAll = (req, res) => {
     });
 };
 
+exports.getPage = (req, res) => {
+  const {offset, limit} = req.query;
+  //const startPage = req.query.startPage;
+  const offsetNumber = parseInt(offset);
+  const limitNumber = parseInt(limit);
+  Tutorial.findAll({offset: offsetNumber, limit: limitNumber})
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || 'Some error occurred while retrieving tutorials.',
+      });
+    });
+};
+
 // Find a single Tutorial with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
